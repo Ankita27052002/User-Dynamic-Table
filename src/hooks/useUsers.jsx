@@ -5,7 +5,7 @@ const useUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const usersPerPage = 8;
+    const usersPerPage = 5;
 
     // Fetching users data from API and handling the error
     useEffect(() => {

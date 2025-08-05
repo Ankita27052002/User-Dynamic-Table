@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import UserTable from "./components/UserTable";
 import useUsers from "./hooks/useUsers";
+import TableSkeletonShimmer from "./components/TableSkeletonShimmer";
 
 const App = () => {
    const {
@@ -16,10 +17,10 @@ const App = () => {
 
    return (
     <div>
-        <h1>User Management Table</h1>
+        
 
         {loading ? (
-            <p className="text-center">Loding Users...</p>
+            <TableSkeletonShimmer/>
         ) : (
             <UserTable
                 users={users}

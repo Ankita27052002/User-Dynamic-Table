@@ -9,188 +9,185 @@ const UserTable = ({
   setCurrentPage,
   totalPages,
 }) => {
-  //  State for search term
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // Search term state
+  const [editIdx, setEditIdx] = useState(null); // Currently edited row index
+  const [editedUser, setEditedUser] = useState({}); // Edited user state
 
-  //  Index of the row currently being edited
-  const [editIdx, setEditIdx] = useState(null);
-
-  //  Stores the currently edited user's data
-  const [editedUser, setEditedUser] = useState({});
-
-  //  Filter current page users based on name, email, or phone
+  // Filter current users based on name, email, or phone
   const filtered = currentUsers.filter((user) =>
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.phone.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  //  Handle field change while editing
+  // Handle field update in edit mode
   const handleChange = (field, value) => {
-    setEditedUser((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setEditedUser((prev) => ({ ...prev, [field]: value }));
   };
 
-  //  Start editing a specific row
+  // Activate edit mode for a row
   const handleEdit = (idx) => {
     setEditIdx(idx);
-    setEditedUser(filtered[idx]); // copy the user data into edit state
+    setEditedUser(filtered[idx]);
   };
 
-  //  Save changes made to a user
+  // Save updated user
   const handleSave = () => {
     const updatedUsers = users.map((user) =>
       user.id === editedUser.id ? editedUser : user
     );
     setUsers(updatedUsers);
-    setEditIdx(null); // exit edit mode
+    setEditIdx(null);
   };
 
-  //  Delete a user by ID
+  // Delete user
   const handleDelete = (id) => {
     const updatedUsers = users.filter((user) => user.id !== id);
     setUsers(updatedUsers);
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      {/*  Search Bar Component */}
+    <div className="p-6 max-w-6xl mx-auto font-serif text-[#22223b]">
+      {/* Heading */}
+      <h2 className="text-3xl font-semibold mb-6 text-center text-[#4a4e69]">
+        User Management Table
+      </h2>
+
+      {/* Search bar */}
       <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
-      {/*  User Table */}
-      <table className="w-full border mt-4">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Name</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Phone</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {/*  Show message when no user matches search */}
-          {filtered.length === 0 ? (
+      {/* Table */}
+      <div className="overflow-x-auto bg-[#f2e9e4] rounded-xl shadow-lg border border-[#c9ada7]">
+        <table className="w-full text-sm md:text-base border-collapse">
+          <thead className="bg-[#4a4e69] text-[#f2e9e4]">
             <tr>
-              <td colSpan="4" className="text-center py-4 text-gray-500">
-                No users match your search.
-              </td>
+              <th className="p-4 text-left font-medium">Name</th>
+              <th className="p-4 text-left font-medium">Email</th>
+              <th className="p-4 text-left font-medium">Phone</th>
+              <th className="p-4 text-left font-medium">Actions</th>
             </tr>
-          ) : (
-            //  Render filtered users
-            filtered.map((user, idx) => (
-              <tr key={user.id} className="border">
-                {/* Name Column */}
-                <td className="p-2 border">
-                  {editIdx === idx ? (
-                    <div className="flex gap-2">
-                      <input
-                        value={editedUser.firstName}
-                        onChange={(e) => handleChange("firstName", e.target.value)}
-                        placeholder="First Name"
-                        className="border p-1 rounded w-full"
-                      />
-                      <input
-                        value={editedUser.lastName}
-                        onChange={(e) => handleChange("lastName", e.target.value)}
-                        placeholder="Last Name"
-                        className="border p-1 rounded w-full"
-                      />
-                    </div>
-                  ) : (
-                    `${user.firstName} ${user.lastName}`
-                  )}
-                </td>
+          </thead>
 
-                {/* Email Column */}
-                <td className="p-2 border">
-                  {editIdx === idx ? (
-                    <input
-                      value={editedUser.email}
-                      onChange={(e) => handleChange("email", e.target.value)}
-                      className="border p-1 rounded w-full"
-                    />
-                  ) : (
-                    user.email
-                  )}
-                </td>
-
-                {/* Phone Column */}
-                <td className="p-2 border">
-                  {editIdx === idx ? (
-                    <input
-                      value={editedUser.phone}
-                      onChange={(e) => handleChange("phone", e.target.value)}
-                      className="border p-1 rounded w-full"
-                    />
-                  ) : (
-                    user.phone
-                  )}
-                </td>
-
-                {/* Action Buttons */}
-                <td className="p-2 border flex gap-2">
-                  {editIdx === idx ? (
-                    <button
-                      onClick={handleSave}
-                      className="bg-green-500 text-white px-3 py-1 rounded"
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleEdit(idx)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded"
-                    >
-                      Edit
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center py-8 text-[#9a8c98] font-semibold">
+                  No users match your search.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              filtered.map((user, idx) => (
+                <tr
+                  key={user.id}
+                  className="border-t border-[#c9ada7] hover:bg-[#e8dcdc] transition duration-200"
+                >
+                  {/* Name */}
+                  <td className="p-4">
+                    {editIdx === idx ? (
+                      <div className="flex gap-2">
+                        <input
+                          value={editedUser.firstName}
+                          onChange={(e) => handleChange("firstName", e.target.value)}
+                          placeholder="First Name"
+                          className="border border-[#c9ada7] bg-white p-2 rounded w-full"
+                        />
+                        <input
+                          value={editedUser.lastName}
+                          onChange={(e) => handleChange("lastName", e.target.value)}
+                          placeholder="Last Name"
+                          className="border border-[#c9ada7] bg-white p-2 rounded w-full"
+                        />
+                      </div>
+                    ) : (
+                      `${user.firstName} ${user.lastName}`
+                    )}
+                  </td>
 
-      {/*  Pagination Controls */}
+                  {/* Email */}
+                  <td className="p-4">
+                    {editIdx === idx ? (
+                      <input
+                        value={editedUser.email}
+                        onChange={(e) => handleChange("email", e.target.value)}
+                        className="border border-[#c9ada7] bg-white p-2 rounded w-full"
+                      />
+                    ) : (
+                      user.email
+                    )}
+                  </td>
+
+                  {/* Phone */}
+                  <td className="p-4">
+                    {editIdx === idx ? (
+                      <input
+                        value={editedUser.phone}
+                        onChange={(e) => handleChange("phone", e.target.value)}
+                        className="border border-[#c9ada7] bg-white p-2 rounded w-full"
+                      />
+                    ) : (
+                      user.phone
+                    )}
+                  </td>
+
+                  {/* Actions */}
+                  <td className="p-4 flex gap-2">
+                    {editIdx === idx ? (
+                      <button
+                        onClick={handleSave}
+                        className="bg-[#4a4e69] hover:bg-[#3b3d57] text-[#f2e9e4] px-4 py-1 rounded shadow-md"
+                      >
+                        Save
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEdit(idx)}
+                        className="bg-[#9a8c98] hover:bg-[#8d7e88] text-white px-4 py-1 rounded shadow-md"
+                      >
+                        Edit
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDelete(user.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded shadow-md"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
       <div className="flex justify-center mt-6 items-center gap-2">
-        {/* Prev Button */}
         <button
           onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
           disabled={currentPage === 1}
-          className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
+          className="bg-[#c9ada7] text-white px-4 py-1 rounded shadow disabled:opacity-50"
         >
           Prev
         </button>
 
-        {/* Page Numbers */}
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button
             key={page}
             onClick={() => setCurrentPage(page)}
-            className={`px-3 py-1 rounded ${
+            className={`px-4 py-1 rounded shadow font-medium ${
               page === currentPage
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100 text-gray-800"
+                ? "bg-[#4a4e69] text-white"
+                : "bg-[#f2e9e4] text-[#4a4e69] border border-[#c9ada7]"
             }`}
           >
             {page}
           </button>
         ))}
 
-        {/* Next Button */}
         <button
           onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className="bg-gray-200 px-3 py-1 rounded disabled:opacity-50"
+          className="bg-[#c9ada7] text-white px-4 py-1 rounded shadow disabled:opacity-50"
         >
           Next
         </button>
